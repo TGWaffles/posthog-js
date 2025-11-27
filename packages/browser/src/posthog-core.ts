@@ -352,6 +352,8 @@ export class PostHog {
     SentryIntegration: typeof SentryIntegration
     sentryIntegration: (options?: SentryIntegrationOptions) => ReturnType<typeof sentryIntegration>
 
+    _makeRequestFn = request
+
     private _internalEventEmitter = new SimpleEventEmitter()
 
     // Legacy property to support existing usage - this isn't technically correct but it's what it has always been - a proxy for flags being loaded
@@ -913,7 +915,7 @@ export class PostHog {
         // Users must be careful when tweaking `cache` because they might get out-of-date feature flags
         options.fetchOptions = options.fetchOptions || this.config.fetch_options
 
-        request({
+        this._makeRequestFn({
             ...options,
             callback: (response) => {
                 this.rateLimiter.checkForLimiting(response)
@@ -3437,6 +3439,19 @@ export class PostHog {
         const explicitlyFalse = isBoolean(debugConfig) && !debugConfig
         const isTrueInLocalStorage = localStore._is_supported() && localStore._get('ph_debug') === 'true'
         return explicitlyFalse ? false : isTrueInLocalStorage ? true : debugConfig
+    }
+
+    /**
+     * Replaces the request function used to send events to the PostHog API
+     *
+     * @remarks
+     * Allows users to customise the behaviour for sending network requests, e.g. to use a different compression
+     * library.
+     *
+     * @param newRequestFn The new request function to use
+     */
+    replaceRequestFn(newRequestFn: typeof request) {
+        this._makeRequestFn = newRequestFn
     }
 }
 
