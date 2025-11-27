@@ -33,6 +33,7 @@
         "playwright:surveys": "pnpm exec playwright test packages/browser/playwright/mocked/surveys/* --project webkit --project firefox --project chromium",
         "playwright:surveys:ui": "pnpm exec playwright test packages/browser/playwright/mocked/surveys/* --ui --project webkit --project firefox --project chromium",
         "prepare": "[ -z \"$VERCEL\" ] && husky install || echo \"Skipping husky install on vercel build\"",
+        "prepack": "cd ../.. && pnpm build",
         "deprecate-old-versions": "node scripts/deprecate-old-versions.mjs",
         "check-testcafe-results": "ts-node testcafe/check-testcafe-results.js",
         "run-testcafe-localhost": "node scripts/run-testcafe-localhost.mjs",
